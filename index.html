@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="az" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeonMC - Premium Minecraft Server</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#18181b',
+                        cardbg: '#1e1e24',
+                        mcgreen: '#55FF55',
+                        mcgold: '#f5a623'
+                    },
+                    fontFamily: {
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        pixel: ['"Press Start 2P"', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; background-color: #121215; color: #f4f4f5; }
+        .pixel-font { font-family: 'Press Start 2P', cursive; }
+        .glow-green { text-shadow: 0 0 10px rgba(85, 255, 85, 0.5); }
+        .glow-gold { text-shadow: 0 0 10px rgba(245, 166, 35, 0.5); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-mcgreen selection:text-black">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="bg-cardbg/90 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <img src="https://minotar.net/helm/Steve/40.png" alt="Logo" class="rounded-lg shadow-lg border border-mcgreen/30">
+                <span class="pixel-font text-mcgreen text-sm md:text-base glow-green">VEONMC</span>
+            </div>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center space-x-6 text-lg font-semibold">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-link text-mcgreen transition hover:text-mcgreen"><i class="fas fa-home mr-1"></i> <span data-i18n="home">Ana Səhifə</span></button>
+                <button onclick="switchTab('shop')" id="nav-shop" class="nav-link text-zinc-400 transition hover:text-mcgreen"><i class="fas fa-store mr-1"></i> <span data-i18n="shop">Mağaza</span></button>
+                <button onclick="switchTab('leaderboard')" id="nav-leaderboard" class="nav-link text-zinc-400 transition hover:text-mcgreen"><i class="fas fa-trophy mr-1"></i> <span data-i18n="leaderboard">Sıralama</span></button>
+                <button onclick="switchTab('rules')" id="nav-rules" class="nav-link text-zinc-400 transition hover:text-mcgreen"><i class="fas fa-book mr-1"></i> <span data-i18n="rules">Qaydalar</span></button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="nav-link text-zinc-400 transition hover:text-mcgreen hidden auth-required"><i class="fas fa-cog mr-1"></i> <span data-i18n="settings">Ayarlar</span></button>
+                <button onclick="switchTab('admin')" id="nav-admin" class="nav-link text-mcgold transition hover:text-yellow-400 hidden admin-required"><i class="fas fa-user-shield mr-1"></i> <span data-i18n="admin">Admin Panel</span></button>
+            </nav>
+
+            <!-- Right Controls: Language, Auth & Mobile Menu Button -->
+            <div class="flex items-center space-x-3">
+                <!-- Language Selector -->
+                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-zinc-800 border border-zinc-700 text-sm rounded-lg px-2 py-1 outline-none focus:border-mcgreen text-white">
+                    <option value="az">AZ 🇦🇿</option>
+                    <option value="en">EN 🇺🇸</option>
+                    <option value="ru">RU 🇷🇺</option>
+                </select>
+
+                <!-- Auth Area -->
+                <div id="authArea" class="hidden sm:flex items-center space-x-2">
+                    <button onclick="openModal('loginModal')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg text-sm font-semibold transition border border-zinc-700"><span data-i18n="login">Giriş</span></button>
+                    <button onclick="openModal('registerModal')" class="bg-mcgreen hover:bg-emerald-400 text-black px-3 py-1.5 rounded-lg text-sm font-bold transition shadow-lg shadow-mcgreen/20"><span data-i18n="register">Qeydiyyat</span></button>
+                </div>
+
+                <!-- User Profile (Hidden by default) -->
+                <div id="userProfileArea" class="hidden flex items-center space-x-2 bg-zinc-800/80 px-2.5 py-1 rounded-xl border border-zinc-700">
+                    <img id="userAvatar" src="" class="w-7 h-7 rounded-md" alt="Avatar">
+                    <div class="hidden sm:block">
+                        <div id="usernameDisplay" class="text-xs font-bold text-mcgreen">User</div>
+                        <div class="text-[10px] text-zinc-400"><span id="userBalance">0.00</span> ₼</div>
+                    </div>
+                    <button onclick="logout()" class="text-red-400 hover:text-red-300 ml-1 text-sm" title="Çıxış"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+
+                <!-- Mobile Menu Hamburger Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-zinc-300 hover:text-mcgreen text-xl p-2 focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-zinc-900 border-b border-zinc-800 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('home'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded-lg text-zinc-300 hover:bg-zinc-800 hover:text-mcgreen"><i class="fas fa-home mr-2"></i> <span data-i18n="home">Ana Səhifə</span></button>
+            <button onclick="switchTab('shop'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded-lg text-zinc-300 hover:bg-zinc-800 hover:text-mcgreen"><i class="fas fa-store mr-2"></i> <span data-i18n="shop">Mağaza</span></button>
+            <button onclick="switchTab('leaderboard'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded-lg text-zinc-300 hover:bg-zinc-800 hover:text-mcgreen"><i class="fas fa-trophy mr-2"></i> <span data-i18n="leaderboard">Sıralama</span></button>
+            <button onclick="switchTab('rules'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded-lg text-zinc-300 hover:bg-zinc-800 hover:text-mcgreen"><i class="fas fa-book mr-2"></i> <span data-i18n="rules">Qaydalar</span></button>
+            <button onclick="switchTab('settings'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded-lg text-zinc-300 hover:bg-zinc-800 hover:text-mcgreen hidden auth-required"><i class="fas fa-cog mr-2"></i> <span data-i18n="settings">Ayarlar</span></button>
+            <button onclick="switchTab('admin'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded-lg text-mcgold hover:bg-zinc-800 hidden admin-required"><i class="fas fa-user-shield mr-2"></i> <span data-i18n="admin">Admin Panel</span></button>
+            
+            <div id="mobileAuthArea" class="pt-2 border-t border-zinc-800 flex space-x-2 sm:hidden">
+                <button onclick="openModal('loginModal'); toggleMobileMenu();" class="flex-1 bg-zinc-800 text-white py-2 rounded-lg text-sm font-bold text-center">Giriş</button>
+                <button onclick="openModal('registerModal'); toggleMobileMenu();" class="flex-1 bg-mcgreen text-black py-2 rounded-lg text-sm font-bold text-center">Qeydiyyat</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- 1. HOME TAB -->
+        <section id="tab-home" class="tab-content space-y-8">
+            <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 md:p-12 text-center relative overflow-hidden shadow-2xl">
+                <div class="absolute inset-0 bg-gradient-to-r from-mcgreen/5 to-transparent pointer-events-none"></div>
+                <h1 class="pixel-font text-2xl md:text-5xl text-mcgreen mb-4 glow-green">VEONMC</h1>
+                
+                <!-- Live Player Count API Widget -->
+                <div class="inline-flex items-center space-x-2 bg-emerald-950/60 border border-mcgreen/30 px-4 py-2 rounded-full mb-6">
+                    <span class="w-3 h-3 bg-mcgreen rounded-full animate-ping"></span>
+                    <span id="livePlayerCount" class="text-mcgreen font-bold text-sm">Oyunçular yüklənir...</span>
+                </div>
+
+                <p class="text-zinc-400 text-base md:text-lg max-w-2xl mx-auto mb-8" data-i18n="homeDesc">
+                    Azərbaycanın ən keyfiyyətli və müasir Minecraft Survival (SMP) təcrübəsi. Macəraya qoşulun!
+                </p>
+
+                <!-- IP Copy Box -->
+                <div class="inline-block bg-zinc-900 border border-zinc-700 p-4 rounded-xl shadow-inner max-w-full">
+                    <span class="text-xs text-zinc-500 uppercase tracking-widest block mb-1" data-i18n="serverIp">Server IP Ünvanı</span>
+                    <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                        <span id="serverIpText" class="text-lg sm:text-xl font-bold text-white tracking-wider">play.veonmc.com</span>
+                        <button onclick="copyIP()" class="w-full sm:w-auto bg-mcgreen hover:bg-emerald-400 text-black px-4 py-2 rounded-lg font-bold text-sm transition flex items-center justify-center space-x-1">
+                            <i class="fas fa-copy"></i> <span data-i18n="copyIp">Kopyala</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SHOP TAB -->
+        <section id="tab-shop" class="tab-content hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl md:text-3xl font-bold pixel-font text-mcgold glow-gold mb-2" data-i18n="shopTitle">VEONMC MAĞAZASI</h2>
+                <p class="text-zinc-400 text-sm md:text-base" data-i18n="shopSubtitle">Serverdə üstünlük qazanmaq üçün xüsusi əşyalar və paketlər.</p>
+            </div>
+
+            <!-- Shop Categories -->
+            <div class="flex flex-wrap justify-center gap-2 mb-6">
+                <button onclick="filterShop('all')" class="shop-cat-btn bg-mcgreen text-black px-4 py-2 rounded-lg font-bold text-sm transition" data-i18n="all">Hamısı</button>
+                <button onclick="filterShop('spawner')" class="shop-cat-btn bg-zinc-800 text-zinc-300 px-4 py-2 rounded-lg font-bold text-sm transition hover:bg-zinc-700" data-i18n="spawners">Spawnerlər</button>
+                <button onclick="filterShop('crate')" class="shop-cat-btn bg-zinc-800 text-zinc-300 px-4 py-2 rounded-lg font-bold text-sm transition hover:bg-zinc-700" data-i18n="crates">Kasalar</button>
+                <button onclick="filterShop('rank')" class="shop-cat-btn bg-zinc-800 text-zinc-300 px-4 py-2 rounded-lg font-bold text-sm transition hover:bg-zinc-700" data-i18n="ranks">Rütbələr</button>
+            </div>
+
+            <!-- Shop Grid -->
+            <div id="shopGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- 3. LEADERBOARD TAB -->
+        <section id="tab-leaderboard" class="tab-content hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl md:text-3xl font-bold pixel-font text-mcgold glow-gold mb-2" data-i18n="lbTitle">OYUNÇU SIRALAMASI</h2>
+                <p class="text-zinc-400 text-sm md:text-base" data-i18n="lbSubtitle">Serverin ən güclü döyüşçüləri və liderləri.</p>
+            </div>
+
+            <div class="bg-cardbg border border-zinc-800 rounded-2xl overflow-hidden shadow-xl overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                        <tr class="bg-zinc-900/80 text-zinc-400 border-b border-zinc-800 text-sm">
+                            <th class="p-4">#</th>
+                            <th class="p-4" data-i18n="player">Oyunçu</th>
+                            <th class="p-4" data-i18n="kills">Öldürmə (Kills)</th>
+                            <th class="p-4" data-i18n="playtime">Oynama Vaxtı</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardTableBody" class="divide-y divide-zinc-800/50"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 4. RULES TAB -->
+        <section id="tab-rules" class="tab-content hidden space-y-6 max-w-4xl mx-auto">
+            <div class="text-center">
+                <h2 class="text-2xl md:text-3xl font-bold pixel-font text-mcgold glow-gold mb-2" data-i18n="rulesTitle">SERVER QAYDALARI</h2>
+                <p class="text-zinc-400 text-sm md:text-base" data-i18n="rulesSubtitle">Hər kəsin rahat və ədalətli oyun oynaması üçün əməl edilməli olan qaydalar.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-lg font-bold text-mcgreen mb-2" data-i18n="rule1Title">1. Hile və Kənar Proqramlar</h3>
+                    <p class="text-zinc-400 text-sm" data-i18n="rule1Desc">Hər cür hile, x-ray, makro və ya oyunda üstünlük təmin edən kənar proqramların istifadəsi qəti qadağandır (Cəza: Permanently Ban).</p>
+                </div>
+                <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-lg font-bold text-mcgreen mb-2" data-i18n="rule2Title">2. Hörmət və Təhqir</h3>
+                    <p class="text-zinc-400 text-sm" data-i18n="rule2Desc">Digər oyunçulara qarşı təhqir, irqçilik, söyüş və ya aşağılayıcı davranışlar qadağandır. Hər kəsə hörmət göstərilməlidir.</p>
+                </div>
+                <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-lg font-bold text-mcgreen mb-2" data-i18n="rule3Title">3. Reklam və Spam</h3>
+                    <p class="text-zinc-400 text-sm" data-i18n="rule3Desc">Chat-də spam etmək, başqa serverlərin və ya sosial media səhifələrinin reklamını etmək qadağandır.</p>
+                </div>
+                <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-lg font-bold text-mcgreen mb-2" data-i18n="rule4Title">4. Bug və Xəta İstifadəsi (Exploit)</h3>
+                    <p class="text-zinc-400 text-sm" data-i18n="rule4Desc">Oyundakı hər hansı bir xətanı öz xeyrinə istifadə etmək və ya adminlərə xəbər verməmək cəzalandırılır.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SETTINGS TAB -->
+        <section id="tab-settings" class="tab-content hidden space-y-6 max-w-xl mx-auto">
+            <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 md:p-8 shadow-xl">
+                <h2 class="text-xl md:text-2xl font-bold text-mcgreen mb-6 flex items-center"><i class="fas fa-lock mr-3"></i> <span data-i18n="settingsTitle">Şifrəni Yenilə</span></h2>
+                
+                <form id="changePasswordForm" onsubmit="handleChangePassword(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase text-zinc-400 mb-1" data-i18n="currentPass">Cari Şifrə</label>
+                        <input type="password" id="currentPassword" required class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white outline-none focus:border-mcgreen">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase text-zinc-400 mb-1" data-i18n="newPass">Yeni Şifrə</label>
+                        <input type="password" id="newPassword" required class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white outline-none focus:border-mcgreen">
+                    </div>
+                    <button type="submit" class="w-full bg-mcgreen hover:bg-emerald-400 text-black font-bold py-3 rounded-lg transition shadow-lg shadow-mcgreen/20" data-i18n="saveChanges">Yadda Saxla</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 6. ADMIN PANEL TAB -->
+        <section id="tab-admin" class="tab-content hidden space-y-8">
+            <div class="bg-cardbg border border-mcgold/30 rounded-2xl p-6 md:p-8 shadow-2xl">
+                <h2 class="text-xl md:text-2xl font-bold pixel-font text-mcgold mb-6 flex items-center"><i class="fas fa-tools mr-3"></i> <span data-i18n="adminPanelTitle">Admin İdarəetmə Paneli</span></h2>
+                
+                <!-- Admin Subtabs -->
+                <div class="flex flex-wrap gap-2 border-b border-zinc-800 pb-4 mb-6">
+                    <button onclick="switchAdminSub('users')" id="admTabBtn-users" class="admin-sub-btn bg-mcgold text-black px-4 py-2 rounded-lg font-bold text-sm transition" data-i18n="manageUsers">İstifadəçilər</button>
+                    <button onclick="switchAdminSub('products')" id="admTabBtn-products" class="admin-sub-btn bg-zinc-800 text-zinc-300 px-4 py-2 rounded-lg font-bold text-sm transition hover:bg-zinc-700" data-i18n="manageProducts">Məhsullar</button>
+                    <button onclick="switchAdminSub('payment')" id="admTabBtn-payment" class="admin-sub-btn bg-zinc-800 text-zinc-300 px-4 py-2 rounded-lg font-bold text-sm transition hover:bg-zinc-700" data-i18n="managePayment">Ödəniş Kartı</button>
+                </div>
+
+                <!-- 6.1. Users Management -->
+                <div id="admSub-users" class="admin-sub-content space-y-4">
+                    <h3 class="text-lg font-bold text-white mb-2" data-i18n="userListHeader">Qeydiyyatdan Keçmiş İstifadəçilər</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead>
+                                <tr class="bg-zinc-900 text-zinc-400 border-b border-zinc-800 text-xs uppercase">
+                                    <th class="p-3">İstifadəçi</th>
+                                    <th class="p-3">Rol</th>
+                                    <th class="p-3">Balans</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3 text-right">Əməliyyatlar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody" class="divide-y divide-zinc-800/50 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 6.2. Products Management -->
+                <div id="admSub-products" class="admin-sub-content hidden space-y-6">
+                    <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 space-y-4">
+                        <h3 class="text-md font-bold text-mcgreen" data-i18n="addNewProduct">Yeni Məhsul Əlavə Et</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            <input type="text" id="newProdName" placeholder="Məhsul Adı" class="bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-sm text-white outline-none focus:border-mcgreen">
+                            <select id="newProdCat" class="bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-sm text-white outline-none focus:border-mcgreen">
+                                <option value="spawner">Spawner</option>
+                                <option value="crate">Kasa</option>
+                                <option value="rank">Rütbə</option>
+                            </select>
+                            <input type="text" id="newProdPrice" placeholder="Qiymət (məs: 5.00 ₼)" class="bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-sm text-white outline-none focus:border-mcgreen">
+                            <button onclick="addNewProduct()" class="bg-mcgreen hover:bg-emerald-400 text-black font-bold rounded-lg p-2.5 text-sm transition" data-i18n="addBtn">Əlavə Et</button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[400px]">
+                            <thead>
+                                <tr class="bg-zinc-900 text-zinc-400 border-b border-zinc-800 text-xs uppercase">
+                                    <th class="p-3">Məhsul</th>
+                                    <th class="p-3">Kateqoriya</th>
+                                    <th class="p-3">Qiymət</th>
+                                    <th class="p-3 text-right">Sil</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsTableBody" class="divide-y divide-zinc-800/50 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 6.3. Payment Card Management -->
+                <div id="admSub-payment" class="admin-sub-content hidden space-y-4 max-w-lg">
+                    <h3 class="text-lg font-bold text-white mb-2" data-i18n="paymentSettingsHeader">Ödəniş Kartı Məlumatları</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs uppercase text-zinc-400 mb-1">Kart Nömrəsi</label>
+                            <input type="text" id="adminCardNumber" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white outline-none focus:border-mcgold">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-zinc-400 mb-1">Kart Sahibi / Bank</label>
+                            <input type="text" id="adminCardOwner" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white outline-none focus:border-mcgold">
+                        </div>
+                        <button onclick="savePaymentInfo()" class="bg-mcgold hover:bg-amber-400 text-black font-bold py-2.5 px-6 rounded-lg transition" data-i18n="saveCard">Kartı Yenilə</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-cardbg border-t border-zinc-800 py-6 text-center text-zinc-500 text-sm px-4">
+        <p>VEONMC © 2026. Bütün hüquqlar qorunur. Minecraft Mojang AB ilə əlaqəli deyil.</p>
+    </footer>
+
+    <!-- MODALS -->
+    
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 w-full max-w-md relative shadow-2xl">
+            <button onclick="closeModal('loginModal')" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl font-bold text-mcgreen mb-4 pixel-font text-sm" data-i18n="login">Giriş Et</h3>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase text-zinc-400 mb-1">İstifadəçi Adı</label>
+                    <input type="text" id="loginUsername" required class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white outline-none focus:border-mcgreen">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-zinc-400 mb-1">Şifrə</label>
+                    <input type="password" id="loginPassword" required class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white outline-none focus:border-mcgreen">
+                </div>
+                <button type="submit" class="w-full bg-mcgreen hover:bg-emerald-400 text-black font-bold py-3 rounded-lg transition" data-i18n="login">Giriş</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 w-full max-w-md relative shadow-2xl">
+            <button onclick="closeModal('registerModal')" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl font-bold text-mcgreen mb-4 pixel-font text-sm" data-i18n="register">Qeydiyyat</h3>
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase text-zinc-400 mb-1">İstifadəçi Adı (Minecraft Nick)</label>
+                    <input type="text" id="regUsername" required class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white outline-none focus:border-mcgreen">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-zinc-400 mb-1">Şifrə</label>
+                    <input type="password" id="regPassword" required class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white outline-none focus:border-mcgreen">
+                </div>
+                <button type="submit" class="w-full bg-mcgreen hover:bg-emerald-400 text-black font-bold py-3 rounded-lg transition" data-i18n="register">Qeydiyyat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-cardbg border border-mcgold/50 rounded-2xl p-6 w-full max-w-md relative shadow-2xl">
+            <button onclick="closeModal('paymentModal')" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl font-bold text-mcgold mb-4 pixel-font text-sm" data-i18n="paymentModalTitle">Ödəniş Təlimatı</h3>
+            
+            <div class="space-y-4 text-sm">
+                <div class="bg-zinc-900 p-3 rounded-lg border border-zinc-800">
+                    <p class="text-zinc-400 text-xs">Məhsul:</p>
+                    <p id="payProdName" class="font-bold text-white text-base">-</p>
+                </div>
+                <div class="bg-zinc-900 p-3 rounded-lg border border-zinc-800">
+                    <p class="text-zinc-400 text-xs">Qiymət:</p>
+                    <p id="payProdPrice" class="font-bold text-mcgreen text-lg">-</p>
+                </div>
+                <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 p-4 rounded-xl border border-mcgold/30">
+                    <p class="text-xs text-zinc-400 mb-1">Bank Kartı (Leobank):</p>
+                    <div class="flex justify-between items-center font-mono text-mcgold font-bold text-base">
+                        <span id="payCardNum">4098 5844 6519 5335</span>
+                        <button onclick="copyCardNum()" class="bg-mcgold text-black text-xs px-2 py-1 rounded font-sans">Kopyala</button>
+                    </div>
+                    <p id="payCardOwner" class="text-xs text-zinc-400 mt-2">VeonMC (Leobank)</p>
+                </div>
+                <p class="text-xs text-zinc-400 text-center" data-i18n="payInstruction">Ödənişi tamamladıqdan sonra çeki Discord biletində administratora təqdim edin.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const translations = {
+            az: {
+                home: "Ana Səhifə", shop: "Mağaza", leaderboard: "Sıralama", rules: "Qaydalar", settings: "Ayarlar", admin: "Admin Panel",
+                login: "Giriş", register: "Qeydiyyat", logout: "Çıxış",
+                homeDesc: "Azərbaycanın ən keyfiyyətli və müasir Minecraft Survival (SMP) təcrübəsi. Macəraya qoşulun!",
+                serverIp: "Server IP Ünvanı", copyIp: "IP-ni Kopyala", copied: "Kopyalandı!",
+                shopTitle: "VEONMC MAĞAZASI", shopSubtitle: "Serverdə üstünlük qazanmaq üçün xüsusi əşyalar və paketlər.",
+                all: "Hamısı", spawners: "Spawnerlər", crates: "Kasalar", ranks: "Rütbələr",
+                lbTitle: "OYUNÇU SIRALAMASI", lbSubtitle: "Serverin ən güclü döyüşçüləri və liderləri.",
+                player: "Oyunçu", kills: "Öldürmə", playtime: "Oynama Vaxtı",
+                rulesTitle: "SERVER QAYDALARI", rulesSubtitle: "Hər kəsin rahat və ədalətli oyun oynaması üçün əməl edilməli olan qaydalar.",
+                rule1Title: "1. Hile və Kənar Proqramlar", rule1Desc: "Hər cür hile, x-ray, makro və ya oyunda üstünlük təmin edən kənar proqramların istifadəsi qəti qadağandır (Cəza: Permanently Ban).",
+                rule2Title: "2. Hörmət və Təhqir", rule2Desc: "Digər oyunçulara qarşı təhqir, irqçilik, söyüş və ya aşağılayıcı davranışlar qadağandır. Hər kəsə hörmət göstərilməlidir.",
+                rule3Title: "3. Reklam və Spam", rule3Desc: "Chat-də spam etmək, başqa serverlərin və ya sosial media səhifələrinin reklamını etmək qadağandır.",
+                rule4Title: "4. Bug və Xəta İstifadəsi (Exploit)", rule4Desc: "Oyundakı hər hansı bir xətanı öz xeyrinə istifadə etmək və ya adminlərə xəbər verməmək cəzalandırılır.",
+                settingsTitle: "Şifrəni Yenilə", currentPass: "Cari Şifrə", newPass: "Yeni Şifrə", saveChanges: "Yadda Saxla",
+                adminPanelTitle: "Admin İdarəetmə Paneli", manageUsers: "İstifadəçilər", manageProducts: "Məhsullar", managePayment: "Ödəniş Kartı",
+                userListHeader: "Qeydiyyatdan Keçmiş İstifadəçilər", addNewProduct: "Yeni Məhsul Əlavə Et", addBtn: "Əlavə Et",
+                paymentSettingsHeader: "Ödəniş Kartı Məlumatları", saveCard: "Kartı Yenilə", paymentModalTitle: "Ödəniş Təlimatı",
+                payInstruction: "Ödənişi tamamladıqdan sonra çeki Discord biletində administratora təqdim edin.",
+                buy: "Satın Al", bannedAlert: "Hesabınız bloklanıb!"
+            },
+            en: {
+                home: "Home", shop: "Store", leaderboard: "Leaderboard", rules: "Rules", settings: "Settings", admin: "Admin Panel",
+                login: "Login", register: "Register", logout: "Logout",
+                homeDesc: "Azerbaijan's highest quality and modern Minecraft Survival (SMP) experience. Join the adventure!",
+                serverIp: "Server IP Address", copyIp: "Copy IP", copied: "Copied!",
+                shopTitle: "VEONMC STORE", shopSubtitle: "Special items and packages to gain an advantage on the server.",
+                all: "All", spawners: "Spawners", crates: "Crates", ranks: "Ranks",
+                lbTitle: "PLAYER LEADERBOARD", lbSubtitle: "The strongest warriors and leaders of the server.",
+                player: "Player", kills: "Kills", playtime: "Playtime",
+                rulesTitle: "SERVER RULES", rulesSubtitle: "Rules to follow for a fair and enjoyable gaming experience for everyone.",
+                rule1Title: "1. Cheats and Hacks", rule1Desc: "The use of any cheats, x-ray, macros, or unauthorized third-party software is strictly prohibited (Penalty: Permanent Ban).",
+                rule2Title: "2. Respect and Insults", rule2Desc: "Insults, racism, swearing, or derogatory behavior towards other players is prohibited. Respect everyone.",
+                rule3Title: "3. Advertising and Spam", rule3Desc: "Spamming in chat or advertising other servers and social media pages is prohibited.",
+                rule4Title: "4. Exploits and Bugs", rule4Desc: "Using any game bugs for personal gain without reporting them to admins is punishable.",
+                settingsTitle: "Change Password", currentPass: "Current Password", newPass: "New Password", saveChanges: "Save Changes",
+                adminPanelTitle: "Admin Control Panel", manageUsers: "Users", manageProducts: "Products", managePayment: "Payment Card",
+                userListHeader: "Registered Users", addNewProduct: "Add New Product", addBtn: "Add",
+                paymentSettingsHeader: "Payment Card Details", saveCard: "Update Card", paymentModalTitle: "Payment Instructions",
+                payInstruction: "After completing the payment, provide the receipt to an administrator via Discord ticket.",
+                buy: "Buy", bannedAlert: "Your account is banned!"
+            },
+            ru: {
+                home: "Главная", shop: "Магазин", leaderboard: "Таблица лидеров", rules: "Правила", settings: "Настройки", admin: "Админ-панель",
+                login: "Войти", register: "Регистрация", logout: "Выйти",
+                homeDesc: "Самый качественный и современный Minecraft Survival (SMP) сервер в Азербайджане. Присоединяйся!",
+                serverIp: "IP Адрес сервера", copyIp: "Копировать IP", copied: "Скопировано!",
+                shopTitle: "МАГАЗИН VEONMC", shopSubtitle: "Специальные предметы и пакеты для получения преимущества.",
+                all: "Все", spawners: "Спавнеры", crates: "Кейсы", ranks: "Ранги",
+                lbTitle: "РЕЙТИНГ ИГРОКОВ", lbSubtitle: "Сильнейшие воины и лидеры сервера.",
+                player: "Игрок", kills: "Убийства", playtime: "Время игры",
+                rulesTitle: "ПРАВИЛА СЕРВЕРА", rulesSubtitle: "Правила, которым нужно следовать для комфортной и честной игры.",
+                rule1Title: "1. Читы и стороннее ПО", rule1Desc: "Использование любых читов, x-ray, макросов и стороннего софта строго запрещено (Наказание: Бан навсегда).",
+                rule2Title: "2. Уважение и оскорбления", rule2Desc: "Оскорбления, расизм, мат и унизительное поведение по отношению к другим игрокам запрещены.",
+                rule3Title: "3. Спам и реклама", rule3Desc: "Спам в чате и реклама других серверов или соцсетей запрещены.",
+                rule4Title: "4. Использование багов (Эксплойты)", rule4Desc: "Использование игровых багов в личных целях и несообщение о них администраторам наказывается.",
+                settingsTitle: "Изменить пароль", currentPass: "Текущий пароль", newPass: "Новый пароль", saveChanges: "Сохранить",
+                adminPanelTitle: "Панель управления", manageUsers: "Пользователи", manageProducts: "Товары", managePayment: "Оплата",
+                userListHeader: "Зарегистрированные пользователи", addNewProduct: "Добавить товар", addBtn: "Добавить",
+                paymentSettingsHeader: "Реквизиты оплаты", saveCard: "Обновить карту", paymentModalTitle: "Инструкция по оплате",
+                payInstruction: "После оплаты предоставьте чек администратору в тикете Discord.",
+                buy: "Купить", bannedAlert: "Ваш аккаунт заблокирован!"
+            }
+        };
+
+        let currentLang = 'az';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+            renderShop();
+        }
+
+        if (!localStorage.getItem('veon_users')) {
+            const defaultUsers = [
+                { username: 'Admin', password: '123', role: 'admin', balance: 150.00, status: 'active' },
+                { username: 'Ayxan_Veon', password: '123', role: 'player', balance: 25.50, status: 'active' },
+                { username: 'Sofia_Queen', password: '123', role: 'player', balance: 50.00, status: 'active' }
+            ];
+            localStorage.setItem('veon_users', JSON.stringify(defaultUsers));
+        }
+
+        if (!localStorage.getItem('veon_products')) {
+            const defaultProducts = [
+                { id: 1, name: 'Zombi Spawner', category: 'spawner', price: '1.00 ₼' },
+                { id: 2, name: 'Skelet Spawner', category: 'spawner', price: '2.50 ₼' },
+                { id: 3, name: 'Blaze Spawner', category: 'spawner', price: '5.00 ₼' },
+                { id: 4, name: 'Əfsanəvi Kasa Anahtarı', category: 'crate', price: '3.00 ₼' },
+                { id: 5, name: 'VIP Rütbəsi (1 Ay)', category: 'rank', price: '5.00 ₼' },
+                { id: 6, name: 'VIP+ Rütbəsi (1 Ay)', category: 'rank', price: '7.00 ₼' },
+                { id: 7, name: 'VeonVip Rütbəsi (1 Ay)', category: 'rank', price: '10.00 ₼' }
+            ];
+            localStorage.setItem('veon_products', JSON.stringify(defaultProducts));
+        }
+
+        if (!localStorage.getItem('veon_payment')) {
+            const defaultPayment = {
+                cardNumber: "4098 5844 6519 5335",
+                cardOwner: "VeonMC (Leobank)"
+            };
+            localStorage.setItem('veon_payment', JSON.stringify(defaultPayment));
+        }
+
+        let currentUser = JSON.parse(localStorage.getItem('veon_current_user')) || null;
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('text-mcgreen');
+                el.classList.add('text-zinc-400');
+            });
+            
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) {
+                activeNav.classList.remove('text-zinc-400');
+                activeNav.classList.add('text-mcgreen');
+            }
+
+            if(tabId === 'admin') loadAdminData();
+            if(tabId === 'leaderboard') loadLeaderboard();
+        }
+
+        async function fetchPlayerCount() {
+            try {
+                const res = await fetch('https://api.mcsrvstat.us/2/play.veonmc.com');
+                const data = await res.json();
+                const countEl = document.getElementById('livePlayerCount');
+                if (data.online) {
+                    countEl.innerText = data.players.online + " Aktiv Oyunçu Onlayn";
+                } else {
+                    countEl.innerText = "Server Oflayndır";
+                }
+            } catch (e) {
+                document.getElementById('livePlayerCount').innerText = "play.veonmc.com (15+ Onlayn)";
+            }
+        }
+        fetchPlayerCount();
+        setInterval(fetchPlayerCount, 60000);
+
+        function copyIP() {
+            navigator.clipboard.writeText("play.veonmc.com");
+            alert("Server IP kopyalandı!");
+        }
+
+        function updateAuthUI() {
+            const authArea = document.getElementById('authArea');
+            const mobileAuthArea = document.getElementById('mobileAuthArea');
+            const userProfileArea = document.getElementById('userProfileArea');
+            const adminNav = document.querySelectorAll('.admin-required');
+            const settingsNav = document.querySelectorAll('.auth-required');
+
+            if (currentUser) {
+                authArea.classList.add('hidden');
+                if(mobileAuthArea) mobileAuthArea.classList.add('hidden');
+                userProfileArea.classList.remove('hidden');
+                document.getElementById('usernameDisplay').innerText = currentUser.username;
+                document.getElementById('userBalance').innerText = currentUser.balance.toFixed(2);
+                document.getElementById('userAvatar').src = `https://minotar.net/helm/${currentUser.username}/32.png`;
+
+                settingsNav.forEach(el => el.classList.remove('hidden'));
+
+                if (currentUser.role === 'admin') {
+                    adminNav.forEach(el => el.classList.remove('hidden'));
+                } else {
+                    adminNav.forEach(el => el.classList.add('hidden'));
+                }
+            } else {
+                authArea.classList.remove('hidden');
+                if(mobileAuthArea) mobileAuthArea.classList.remove('hidden');
+                userProfileArea.classList.add('hidden');
+                adminNav.forEach(el => el.classList.add('hidden'));
+                settingsNav.forEach(el => el.classList.add('hidden'));
+            }
+        }
+        updateAuthUI();
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value;
+            const p = document.getElementById('loginPassword').value;
+            let users = JSON.parse(localStorage.getItem('veon_users'));
+            
+            const found = users.find(x => x.username === u && x.password === p);
+            if (found) {
+                if (found.status === 'banned') {
+                    alert(translations[currentLang].bannedAlert);
+                    return;
+                }
+                currentUser = found;
+                localStorage.setItem('veon_current_user', JSON.stringify(currentUser));
+                closeModal('loginModal');
+                updateAuthUI();
+                switchTab('home');
+            } else {
+                alert("İstifadəçi adı və ya şifrə yanlışdır!");
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const u = document.getElementById('regUsername').value;
+            const p = document.getElementById('regPassword').value;
+            let users = JSON.parse(localStorage.getItem('veon_users'));
+
+            if (users.some(x => x.username === u)) {
+                alert("Bu istifadəçi adı artıq mövcuddur!");
+                return;
+            }
+
+            const newUser = { username: u, password: p, role: 'player', balance: 0.00, status: 'active' };
+            users.push(newUser);
+            localStorage.setItem('veon_users', JSON.stringify(users));
+            
+            currentUser = newUser;
+            localStorage.setItem('veon_current_user', JSON.stringify(currentUser));
+            closeModal('registerModal');
+            updateAuthUI();
+            switchTab('home');
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('veon_current_user');
+            updateAuthUI();
+            switchTab('home');
+        }
+
+        let currentFilter = 'all';
+        function filterShop(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.shop-cat-btn').forEach(btn => {
+                btn.classList.remove('bg-mcgreen', 'text-black');
+                btn.classList.add('bg-zinc-800', 'text-zinc-300');
+            });
+            event.target.classList.remove('bg-zinc-800', 'text-zinc-300');
+            event.target.classList.add('bg-mcgreen', 'text-black');
+            renderShop();
+        }
+
+        function renderShop() {
+            const grid = document.getElementById('shopGrid');
+            grid.innerHTML = '';
+            let products = JSON.parse(localStorage.getItem('veon_products'));
+
+            let filtered = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+
+            filtered.forEach(prod => {
+                grid.innerHTML += `
+                    <div class="bg-cardbg border border-zinc-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl hover:border-mcgreen/50 transition">
+                        <div>
+                            <div class="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center text-mcgreen text-xl mb-4 border border-zinc-800">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-1">${prod.name}</h3>
+                            <p class="text-xs text-zinc-400 uppercase tracking-wider mb-4">${prod.category}</p>
+                        </div>
+                        <div>
+                            <div class="text-mcgreen font-bold text-xl mb-4">${prod.price}</div>
+                            <button onclick="openPaymentModal('${prod.name}', '${prod.price}')" class="w-full bg-zinc-800 hover:bg-mcgreen hover:text-black text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center space-x-2">
+                                <i class="fas fa-shopping-cart"></i> <span>${translations[currentLang].buy}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        renderShop();
+
+        function openPaymentModal(name, price) {
+            document.getElementById('payProdName').innerText = name;
+            document.getElementById('payProdPrice').innerText = price;
+            let payment = JSON.parse(localStorage.getItem('veon_payment'));
+            document.getElementById('payCardNum').innerText = payment.cardNumber;
+            document.getElementById('payCardOwner').innerText = payment.cardOwner;
+            openModal('paymentModal');
+        }
+
+        function copyCardNum() {
+            let payment = JSON.parse(localStorage.getItem('veon_payment'));
+            navigator.clipboard.writeText(payment.cardNumber);
+            alert("Kart nömrəsi kopyalandı!");
+        }
+
+        function loadLeaderboard() {
+            const tbody = document.getElementById('leaderboardTableBody');
+            tbody.innerHTML = `
+                <tr class="hover:bg-zinc-900/40"><td class="p-4 font-bold text-mcgold">1</td><td class="p-4 flex items-center space-x-3"><img src="https://minotar.net/helm/Ayxan_Veon/24.png" class="rounded"><span>Ayxan_Veon</span></td><td class="p-4">1450</td><td class="p-4">320 saat</td></tr>
+                <tr class="hover:bg-zinc-900/40"><td class="p-4 font-bold text-zinc-300">2</td><td class="p-4 flex items-center space-x-3"><img src="https://minotar.net/helm/Sofia_Queen/24.png" class="rounded"><span>Sofia_Queen</span></td><td class="p-4">980</td><td class="p-4">250 saat</td></tr>
+                <tr class="hover:bg-zinc-900/40"><td class="p-4 font-bold text-amber-600">3</td><td class="p-4 flex items-center space-x-3"><img src="https://minotar.net/helm/Admin/24.png" class="rounded"><span>Admin</span></td><td class="p-4">750</td><td class="p-4">180 saat</td></tr>
+            `;
+        }
+
+        function handleChangePassword(e) {
+            e.preventDefault();
+            const curr = document.getElementById('currentPassword').value;
+            const next = document.getElementById('newPassword').value;
+
+            if (currentUser.password !== curr) {
+                alert("Cari şifrə yanlışdır!");
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('veon_users'));
+            let uObj = users.find(x => x.username === currentUser.username);
+            uObj.password = next;
+            currentUser.password = next;
+
+            localStorage.setItem('veon_users', JSON.stringify(users));
+            localStorage.setItem('veon_current_user', JSON.stringify(currentUser));
+            alert("Şifrə uğurla yeniləndi!");
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        function switchAdminSub(sub) {
+            document.querySelectorAll('.admin-sub-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.admin-sub-btn').forEach(btn => {
+                btn.classList.remove('bg-mcgold', 'text-black');
+                btn.classList.add('bg-zinc-800', 'text-zinc-300');
+            });
+
+            document.getElementById('admSub-' + sub).classList.remove('hidden');
+            const btn = document.getElementById('admTabBtn-' + sub);
+            btn.classList.remove('bg-zinc-800', 'text-zinc-300');
+            btn.classList.add('bg-mcgold', 'text-black');
+        }
+
+        function loadAdminData() {
+            let users = JSON.parse(localStorage.getItem('veon_users'));
+            let uBody = document.getElementById('adminUsersTableBody');
+            uBody.innerHTML = '';
+            users.forEach(u => {
+                uBody.innerHTML += `
+                    <tr class="hover:bg-zinc-900/40">
+                        <td class="p-3 font-bold text-white">${u.username}</td>
+                        <td class="p-3 text-zinc-400">${u.role}</td>
+                        <td class="p-3 text-mcgreen">${u.balance.toFixed(2)} ₼</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-xs ${u.status === 'banned' ? 'bg-red-950 text-red-400' : 'bg-emerald-950 text-mcgreen'}">${u.status}</span></td>
+                        <td class="p-3 text-right space-x-2">
+                            <button onclick="addBalance('${u.username}')" class="bg-zinc-800 hover:bg-zinc-700 px-2 py-1 rounded text-xs text-mcgreen">+ Balans</button>
+                            <button onclick="toggleBan('${u.username}')" class="bg-zinc-800 hover:bg-red-950 px-2 py-1 rounded text-xs text-red-400">${u.status === 'banned' ? 'Aç' : 'Ban'}</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            let products = JSON.parse(localStorage.getItem('veon_products'));
+            let pBody = document.getElementById('adminProductsTableBody');
+            pBody.innerHTML = '';
+            products.forEach(p => {
+                pBody.innerHTML += `
+                    <tr class="hover:bg-zinc-900/40">
+                        <td class="p-3 font-bold text-white">${p.name}</td>
+                        <td class="p-3 text-zinc-400">${p.category}</td>
+                        <td class="p-3 text-mcgreen">${p.price}</td>
+                        <td class="p-3 text-right"><button onclick="deleteProduct(${p.id})" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+
+            let payment = JSON.parse(localStorage.getItem('veon_payment'));
+            document.getElementById('adminCardNumber').value = payment.cardNumber;
+            document.getElementById('adminCardOwner').value = payment.cardOwner;
+        }
+
+        function addBalance(username) {
+            let amount = prompt("Əlavə olunacaq məbləği daxil edin (₼):");
+            if(amount && !isNaN(amount)) {
+                let users = JSON.parse(localStorage.getItem('veon_users'));
+                let u = users.find(x => x.username === username);
+                u.balance += parseFloat(amount);
+                localStorage.setItem('veon_users', JSON.stringify(users));
+                if(currentUser && currentUser.username === username) {
+                    currentUser.balance = u.balance;
+                    localStorage.setItem('veon_current_user', JSON.stringify(currentUser));
+                    updateAuthUI();
+                }
+                loadAdminData();
+            }
+        }
+
+        function toggleBan(username) {
+            let users = JSON.parse(localStorage.getItem('veon_users'));
+            let u = users.find(x => x.username === username);
+            if(u.role === 'admin') { alert("Admin hesabı ban edilə bilməz!"); return; }
+            u.status = u.status === 'banned' ? 'active' : 'banned';
+            localStorage.setItem('veon_users', JSON.stringify(users));
+            loadAdminData();
+        }
+
+        function addNewProduct() {
+            let name = document.getElementById('newProdName').value;
+            let cat = document.getElementById('newProdCat').value;
+            let price = document.getElementById('newProdPrice' ).value;
+
+            if(!name || !price) { alert("Xanaları doldurun!"); return; }
+
+            let products = JSON.parse(localStorage.getItem('veon_products'));
+            products.push({ id: Date.now(), name, category: cat, price });
+            localStorage.setItem('veon_products', JSON.stringify(products));
+            
+            document.getElementById('newProdName').value = '';
+            document.getElementById('newProdPrice').value = '';
+            loadAdminData();
+            renderShop();
+        }
+
+        function deleteProduct(id) {
+            let products = JSON.parse(localStorage.getItem('veon_products'));
+            products = products.filter(p => p.id !== id);
+            localStorage.setItem('veon_products', JSON.stringify(products));
+            loadAdminData();
+            renderShop();
+        }
+
+        function savePaymentInfo() {
+            let num = document.getElementById('adminCardNumber').value;
+            let owner = document.getElementById('adminCardOwner').value;
+            localStorage.setItem('veon_payment', JSON.stringify({ cardNumber: num, cardOwner: owner }));
+            alert("Ödəniş kartı məlumatları yeniləndi!");
+        }
+    </script>
+</body>
+</html>
