@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="az" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZIRVE SMP - Official Website</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mcBg: '#18181b',
+                        mcPanel: '#1e1e24',
+                        mcGreen: '#55FF55',
+                        mcGreenDark: '#38cc38',
+                        mcDarkBorder: '#2d2d35'
+                    },
+                    fontFamily: {
+                        pixel: ['"Press Start 2P"', 'cursive'],
+                        sans: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #18181b;
+            color: #f4f4f5;
+        }
+        .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #18181b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d2d35;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #55FF55;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-mcGreen selection:text-black">
+
+    <!-- NAVBAR -->
+    <nav class="bg-mcPanel/90 backdrop-blur-md border-b border-mcDarkBorder sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home')">
+                <img src="https://mc-heads.net/avatar/MHF_Steve/40" alt="Steve" class="w-10 h-10 rounded border border-mcGreen shadow-md">
+                <span class="pixel-font text-mcGreen text-sm md:text-lg tracking-wider">ZIRVE SMP</span>
+            </div>
+
+            <!-- Nav Links -->
+            <div class="hidden md:flex items-center space-x-6 text-lg font-semibold">
+                <button onclick="switchTab('home')" class="nav-btn hover:text-mcGreen transition" data-key="navHome">Ana Səhifə</button>
+                <button onclick="switchTab('shop')" class="nav-btn hover:text-mcGreen transition" data-key="navShop">Mağaza</button>
+                <button onclick="switchTab('leaderboard')" class="nav-btn hover:text-mcGreen transition" data-key="navLeaderboard">Sıralama</button>
+                <button onclick="switchTab('settings')" id="navSettingsBtn" class="hidden nav-btn hover:text-mcGreen transition" data-key="navSettings">Ayarlar</button>
+                <button onclick="switchTab('admin')" id="navAdminBtn" class="hidden text-red-400 hover:text-red-300 transition font-bold" data-key="navAdmin">Admin Panel</button>
+            </div>
+
+            <!-- User & Lang Switcher -->
+            <div class="flex items-center gap-3">
+                <!-- Language Switcher -->
+                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-mcBg border border-mcDarkBorder text-sm rounded px-2 py-1 focus:outline-none focus:border-mcGreen cursor-pointer">
+                    <option value="az">AZ 🇦🇿</option>
+                    <option value="en">EN 🇺🇸</option>
+                    <option value="ru">RU 🇷🇺</option>
+                </select>
+
+                <!-- Auth Buttons / User Profile -->
+                <div id="authContainer">
+                    <button onclick="openModal('loginModal')" class="bg-mcGreen text-black font-bold px-4 py-1.5 rounded hover:bg-mcGreenDark transition text-sm">Giriş</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div class="md:hidden flex justify-around mt-3 pt-2 border-t border-mcDarkBorder text-sm font-medium">
+            <button onclick="switchTab('home')" data-key="navHome">Ana Səhifə</button>
+            <button onclick="switchTab('shop')" data-key="navShop">Mağaza</button>
+            <button onclick="switchTab('leaderboard')" data-key="navLeaderboard">Sıralama</button>
+            <button onclick="switchTab('settings')" id="mobileNavSettingsBtn" class="hidden" data-key="navSettings">Ayarlar</button>
+            <button onclick="switchTab('admin')" id="mobileNavAdminBtn" class="hidden text-red-400" data-key="navAdmin">Admin</button>
+        </div>
+    </nav>
+
+    <!-- CONTENT SECTIONS -->
+    <main class="max-w-7xl mx-auto p-4 flex-grow w-full">
+
+        <!-- HOME TAB -->
+        <section id="tab-home" class="tab-content">
+            <div class="relative rounded-2xl overflow-hidden bg-mcPanel border border-mcDarkBorder p-8 md:p-16 text-center my-6">
+                <div class="absolute inset-0 bg-cover bg-center opacity-10" style="background-image: url('https://images.unsplash.com/photo-1627856013091-fed6e4e30025?q=80&w=1200');"></div>
+                <div class="relative z-10 max-w-2xl mx-auto space-y-6">
+                    <h1 class="pixel-font text-2xl md:text-4xl text-mcGreen drop-shadow">ZIRVE SMP</h1>
+                    <p class="text-gray-300 text-lg md:text-xl font-medium" data-key="heroDesc">
+                        Azərbaycanın ən inkişaf etmiş və maraqlı Minecraft Survival (SMP) serverinə xoş gəlmisiniz! İndi qoşulun və öz krallığınızı qurun.
+                    </p>
+                    
+                    <!-- Copy IP Box -->
+                    <div class="bg-mcBg border-2 border-dashed border-mcGreen/50 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="text-left">
+                            <span class="text-xs text-gray-400 block" data-key="ipLabel">SERVER IP ƏNVANI</span>
+                            <span class="text-xl font-bold tracking-wider text-mcGreen">play.veonmc.com</span>
+                        </div>
+                        <button onclick="copyIP()" class="w-full md:w-auto bg-mcGreen hover:bg-mcGreenDark text-black font-bold px-6 py-2.5 rounded-lg transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-copy"></i>
+                            <span data-key="copyBtn">IP Kopyala</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
+                <div class="bg-mcPanel border border-mcDarkBorder p-6 rounded-xl text-center space-y-3">
+                    <i class="fa-solid fa-shield-halved text-4xl text-mcGreen"></i>
+                    <h3 class="text-xl font-bold" data-key="feat1Title">GÜCLÜ MÜDAFİƏ</h3>
+                    <p class="text-gray-400 text-sm" data-key="feat1Desc">Anti-Cheat və 7/24 aktiv qoruma sistemi ilə tam təhlükəsiz oyun mühiti.</p>
+                </div>
+                <div class="bg-mcPanel border border-mcDarkBorder p-6 rounded-xl text-center space-y-3">
+                    <i class="fa-solid fa-coins text-4xl text-mcGreen"></i>
+                    <h3 class="text-xl font-bold" data-key="feat2Title">XÜSUSİ İQTİSADİYYAT</h3>
+                    <p class="text-gray-400 text-sm" data-key="feat2Desc">Dengeli bazar sistemi, spawnerlər və xüsusi hərraclar ilə fərqli SMP təcrübəsi.</p>
+                </div>
+                <div class="bg-mcPanel border border-mcDarkBorder p-6 rounded-xl text-center space-y-3">
+                    <i class="fa-solid fa-bolt text-4xl text-mcGreen"></i>
+                    <h3 class="text-xl font-bold" data-key="feat3Title">AŞAĞI LAG & YÜKSƏK FPS</h3>
+                    <p class="text-gray-400 text-sm" data-key="feat3Desc">Güclü VDS infrastrukturumuz vasitəsilə kəsintisiz və rəvan oyun imkanı.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SHOP TAB -->
+        <section id="tab-shop" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-6 text-mcGreen border-b border-mcDarkBorder pb-2 flex items-center gap-3">
+                <i class="fa-solid fa-store"></i> <span data-key="shopTitle">Mağaza - Spawnerlər</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Spawner Card 1 -->
+                <div class="bg-mcPanel border border-mcDarkBorder rounded-xl p-6 flex flex-col justify-between hover:border-mcGreen transition">
+                    <div>
+                        <div class="bg-mcBg p-4 rounded-lg flex justify-center mb-4">
+                            <img src="https://minecraft.wiki/images/Zombie_Head_%28item%29_JE1_BE1.png" alt="Zombie" class="w-20 h-20 object-contain">
+                        </div>
+                        <h3 class="text-2xl font-bold mb-1" data-key="spawnerZombie">Zombi Spawneri</h3>
+                        <p class="text-gray-400 text-sm mb-4" data-key="spawnerZombieDesc">Avtomatik zombi ferması qurmaq üçün ideal seçimdir.</p>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-mcGreen mb-4">1.00 ₼</div>
+                        <button onclick="buyItem('Zombi Spawneri', 1.00)" class="w-full bg-mcGreen hover:bg-mcGreenDark text-black font-bold py-2 rounded-lg transition" data-key="buyBtn">Satın Al</button>
+                    </div>
+                </div>
+
+                <!-- Spawner Card 2 -->
+                <div class="bg-mcPanel border border-mcDarkBorder rounded-xl p-6 flex flex-col justify-between hover:border-mcGreen transition">
+                    <div>
+                        <div class="bg-mcBg p-4 rounded-lg flex justify-center mb-4">
+                            <img src="https://minecraft.wiki/images/Skeleton_Skull_%28item%29_JE1_BE1.png" alt="Skeleton" class="w-20 h-20 object-contain">
+                        </div>
+                        <h3 class="text-2xl font-bold mb-1" data-key="spawnerSkeleton">Skelet Spawneri</h3>
+                        <p class="text-gray-400 text-sm mb-4" data-key="spawnerSkeletonDesc">Sümük və ox fərması üçün ən yaxşı resurs mənbəyi.</p>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-mcGreen mb-4">2.50 ₼</div>
+                        <button onclick="buyItem('Skelet Spawneri', 2.50)" class="w-full bg-mcGreen hover:bg-mcGreenDark text-black font-bold py-2 rounded-lg transition" data-key="buyBtn">Satın Al</button>
+                    </div>
+                </div>
+
+                <!-- Spawner Card 3 -->
+                <div class="bg-mcPanel border border-mcDarkBorder rounded-xl p-6 flex flex-col justify-between hover:border-mcGreen transition">
+                    <div>
+                        <div class="bg-mcBg p-4 rounded-lg flex justify-center mb-4">
+                            <img src="https://minecraft.wiki/images/Blaze_Rod_JE3_BE2.png" alt="Blaze" class="w-20 h-20 object-contain">
+                        </div>
+                        <h3 class="text-2xl font-bold mb-1" data-key="spawnerBlaze">Blaze Spawneri</h3>
+                        <p class="text-gray-400 text-sm mb-4" data-key="spawnerBlazeDesc">Yüksək XP və əla iksir materialı almaq üçün premium spawner.</p>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-mcGreen mb-4">5.00 ₼</div>
+                        <button onclick="buyItem('Blaze Spawneri', 5.00)" class="w-full bg-mcGreen hover:bg-mcGreenDark text-black font-bold py-2 rounded-lg transition" data-key="buyBtn">Satın Al</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEADERBOARD TAB -->
+        <section id="tab-leaderboard" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-6 text-mcGreen border-b border-mcDarkBorder pb-2 flex items-center gap-3">
+                <i class="fa-solid fa-trophy"></i> <span data-key="lbTitle">Oyuncu Sıralaması</span>
+            </h2>
+
+            <div class="bg-mcPanel border border-mcDarkBorder rounded-xl overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-mcBg border-b border-mcDarkBorder text-mcGreen font-bold">
+                            <th class="p-4">#</th>
+                            <th class="p-4" data-key="lbPlayer">Oyuncu</th>
+                            <th class="p-4" data-key="lbKills">Öldürmələr (Kills)</th>
+                            <th class="p-4" data-key="lbPlaytime">Oynama Müddəti</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- JS populated -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SETTINGS TAB -->
+        <section id="tab-settings" class="tab-content hidden">
+            <div class="max-w-md mx-auto bg-mcPanel border border-mcDarkBorder rounded-xl p-6">
+                <h2 class="text-2xl font-bold mb-6 text-mcGreen flex items-center gap-2">
+                    <i class="fa-solid fa-gear"></i> <span data-key="settingsTitle">Hesab Ayarları</span>
+                </h2>
+
+                <form onsubmit="changePassword(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1" data-key="lblCurrPass">Hazırkı Şifrə</label>
+                        <input type="password" id="currPassInput" required class="w-full bg-mcBg border border-mcDarkBorder rounded px-3 py-2 text-white focus:outline-none focus:border-mcGreen">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1" data-key="lblNewPass">Yeni Şifrə</label>
+                        <input type="password" id="newPassInput" required class="w-full bg-mcBg border border-mcDarkBorder rounded px-3 py-2 text-white focus:outline-none focus:border-mcGreen">
+                    </div>
+                    <button type="submit" class="w-full bg-mcGreen hover:bg-mcGreenDark text-black font-bold py-2 rounded transition" data-key="btnUpdatePass">Şifrəni Yenilə</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ADMIN TAB -->
+        <section id="tab-admin" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-6 text-red-500 border-b border-mcDarkBorder pb-2 flex items-center gap-3">
+                <i class="fa-solid fa-user-shield"></i> <span data-key="adminTitle">Admin İdarəetmə Paneli</span>
+            </h2>
+
+            <div class="bg-mcPanel border border-mcDarkBorder rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4 text-mcGreen" data-key="adminUserList">İstifadəçilərin Siyahısı</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-mcBg border-b border-mcDarkBorder text-gray-300">
+                                <th class="p-3">Avatar</th>
+                                <th class="p-3" data-key="thUsername">İstifadəçi Adı</th>
+                                <th class="p-3" data-key="thRole">Rol</th>
+                                <th class="p-3" data-key="thBalance">Balans</th>
+                                <th class="p-3" data-key="thStatus">Status</th>
+                                <th class="p-3" data-key="thActions">Əməliyyatlar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersBody">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-mcPanel border-t border-mcDarkBorder py-6 mt-12 text-center text-gray-400 text-sm">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="pixel-font text-mcGreen text-xs">ZIRVE SMP</span>
+                <span>© 2026. Bütün hüquqlar qorunur.</span>
+            </div>
+            <div class="flex gap-4 text-lg">
+                <a href="#" class="hover:text-mcGreen"><i class="fa-brands fa-discord"></i></a>
+                <a href="#" class="hover:text-mcGreen"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="hover:text-mcGreen"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-mcPanel border border-mcDarkBorder rounded-xl max-w-sm w-full p-6 relative">
+            <button onclick="closeModal('loginModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-2xl font-bold mb-4 text-mcGreen" data-key="modalLoginTitle">Hesaba Giriş</h3>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1" data-key="lblUsername">Minecraft İstifadəçi Adı</label>
+                    <input type="text" id="loginUsername" required class="w-full bg-mcBg border border-mcDarkBorder rounded px-3 py-2 text-white focus:outline-none focus:border-mcGreen">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" data-key="lblPassword">Şifrə</label>
+                    <input type="password" id="loginPassword" required class="w-full bg-mcBg border border-mcDarkBorder rounded px-3 py-2 text-white focus:outline-none focus:border-mcGreen">
+                </div>
+                <button type="submit" class="w-full bg-mcGreen hover:bg-mcGreenDark text-black font-bold py-2 rounded transition" data-key="btnLoginSubmit">Giriş Et</button>
+            </form>
+            <p class="text-sm text-gray-400 text-center mt-4">
+                <span data-key="msgNoAccount">Hesabınız yoxdur?</span>
+                <button onclick="closeModal('loginModal'); openModal('registerModal')" class="text-mcGreen underline ml-1" data-key="btnGoRegister">Qeydiyyatdan keçin</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- REGISTER MODAL -->
+    <div id="registerModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-mcPanel border border-mcDarkBorder rounded-xl max-w-sm w-full p-6 relative">
+            <button onclick="closeModal('registerModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-2xl font-bold mb-4 text-mcGreen" data-key="modalRegisterTitle">Qeydiyyat</h3>
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1" data-key="lblUsername">Minecraft İstifadəçi Adı</label>
+                    <input type="text" id="regUsername" required class="w-full bg-mcBg border border-mcDarkBorder rounded px-3 py-2 text-white focus:outline-none focus:border-mcGreen">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" data-key="lblPassword">Şifrə</label>
+                    <input type="password" id="regPassword" required class="w-full bg-mcBg border border-mcDarkBorder rounded px-3 py-2 text-white focus:outline-none focus:border-mcGreen">
+                </div>
+                <button type="submit" class="w-full bg-mcGreen hover:bg-mcGreenDark text-black font-bold py-2 rounded transition" data-key="btnRegisterSubmit">Qeydiyyatı Tamamla</button>
+            </form>
+            <p class="text-sm text-gray-400 text-center mt-4">
+                <span data-key="msgHasAccount">Artıq hesabınız var?</span>
+                <button onclick="closeModal('registerModal'); openModal('loginModal')" class="text-mcGreen underline ml-1" data-key="btnGoLogin">Giriş edin</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- BALANCE ADD MODAL (ADMIN) -->
+    <div id="balanceModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-mcPanel border border-mcDarkBorder rounded-xl max-w-sm w-full p-6 relative">
+            <button onclick="closeModal('balanceModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-xl font-bold mb-4 text-mcGreen" data-key="modalAddBalanceTitle">Balans Əlavə Et</h3>
+            <form onsubmit="submitAddBalance(event)" class="space-y-4">
+                <input type="hidden" id="balanceTargetUser">
+                <div>
+                    <label class="block text-sm font-medium mb-1" data-key="lblAmount">Məbləğ (₼)</label>
+                    <input type="number" step="0.5" id="balanceAmount" required class="w-full bg-mcBg border border-mcDarkBorder rounded px-3 py-2 text-white focus:outline-none focus:border-mcGreen">
+                </div>
+                <button type="submit" class="w-full bg-mcGreen hover:bg-mcGreenDark text-black font-bold py-2 rounded transition" data-key="btnAddBalanceSubmit">Təsdiqlə</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // DICTIONARY / LOCALIZATION
+        const i18n = {
+            az: {
+                navHome: "Ana Səhifə",
+                navShop: "Mağaza",
+                navLeaderboard: "Sıralama",
+                navSettings: "Ayarlar",
+                navAdmin: "Admin Panel",
+                heroDesc: "Azərbaycanın ən inkişaf etmiş və maraqlı Minecraft Survival (SMP) serverinə xoş gəlmisiniz! İndi qoşulun və öz krallığınızı qurun.",
+                ipLabel: "SERVER IP ƏNVANI",
+                copyBtn: "IP Kopyala",
+                feat1Title: "GÜCLÜ MÜDAFİƏ",
+                feat1Desc: "Anti-Cheat və 7/24 aktiv qoruma sistemi ilə tam təhlükəsiz oyun mühiti.",
+                feat2Title: "XÜSUSİ İQTİSADİYYAT",
+                feat2Desc: "Dengeli bazar sistemi, spawnerlər və xüsusi hərraclar ilə fərqli SMP təcrübəsi.",
+                feat3Title: "AŞAĞI LAG & YÜKSƏK FPS",
+                feat3Desc: "Güclü VDS infrastrukturumuz vasitəsilə kəsintisiz və rəvan oyun imkanı.",
+                shopTitle: "Mağaza - Spawnerlər",
+                spawnerZombie: "Zombi Spawneri",
+                spawnerZombieDesc: "Avtomatik zombi ferması qurmaq üçün ideal seçimdir.",
+                spawnerSkeleton: "Skelet Spawneri",
+                spawnerSkeletonDesc: "Sümük və ox fərması üçün ən yaxşı resurs mənbəyi.",
+                spawnerBlaze: "Blaze Spawneri",
+                spawnerBlazeDesc: "Yüksək XP və əla iksir materialı almaq üçün premium spawner.",
+                buyBtn: "Satın Al",
+                lbTitle: "Oyuncu Sıralaması",
+                lbPlayer: "Oyuncu",
+                lbKills: "Öldürmələr (Kills)",
+                lbPlaytime: "Oynama Müddəti",
+                settingsTitle: "Hesab Ayarları",
+                lblCurrPass: "Hazırkı Şifrə",
+                lblNewPass: "Yeni Şifrə",
+                btnUpdatePass: "Şifrəni Yenilə",
+                adminTitle: "Admin İdarəetmə Paneli",
+                adminUserList: "İstifadəçilərin Siyahısı",
+                thUsername: "İstifadəçi Adı",
+                thRole: "Rol",
+                thBalance: "Balans",
+                thStatus: "Status",
+                thActions: "Əməliyyatlar",
+                modalLoginTitle: "Hesaba Giriş",
+                modalRegisterTitle: "Qeydiyyat",
+                lblUsername: "Minecraft İstifadəçi Adı",
+                lblPassword: "Şifrə",
+                btnLoginSubmit: "Giriş Et",
+                btnRegisterSubmit: "Qeydiyyatı Tamamla",
+                msgNoAccount: "Hesabınız yoxdur?",
+                btnGoRegister: "Qeydiyyatdan keçin",
+                msgHasAccount: "Artıq hesabınız var?",
+                btnGoLogin: "Giriş edin",
+                modalAddBalanceTitle: "Balans Əlavə Et",
+                lblAmount: "Məbləğ (₼)",
+                btnAddBalanceSubmit: "Təsdiqlə"
+            },
+            en: {
+                navHome: "Home",
+                navShop: "Shop",
+                navLeaderboard: "Leaderboard",
+                navSettings: "Settings",
+                navAdmin: "Admin Panel",
+                heroDesc: "Welcome to Azerbaijan's most advanced Minecraft Survival (SMP) server! Join now and build your kingdom.",
+                ipLabel: "SERVER IP ADDRESS",
+                copyBtn: "Copy IP",
+                feat1Title: "STRONG PROTECTION",
+                feat1Desc: "Secure gaming environment with Anti-Cheat and 24/7 protection.",
+                feat2Title: "CUSTOM ECONOMY",
+                feat2Desc: "Balanced market system, spawners, and special auctions.",
+                feat3Title: "LOW LAG & HIGH FPS",
+                feat3Desc: "Uninterrupted gameplay via our powerful VDS infrastructure.",
+                shopTitle: "Shop - Spawners",
+                spawnerZombie: "Zombie Spawner",
+                spawnerZombieDesc: "Ideal choice for building an automatic zombie farm.",
+                spawnerSkeleton: "Skeleton Spawner",
+                spawnerSkeletonDesc: "Best resource source for bones and arrows.",
+                spawnerBlaze: "Blaze Spawner",
+                spawnerBlazeDesc: "Premium spawner for high XP and potion ingredients.",
+                buyBtn: "Buy Now",
+                lbTitle: "Leaderboard",
+                lbPlayer: "Player",
+                lbKills: "Kills",
+                lbPlaytime: "Playtime",
+                settingsTitle: "Account Settings",
+                lblCurrPass: "Current Password",
+                lblNewPass: "New Password",
+                btnUpdatePass: "Update Password",
+                adminTitle: "Admin Management Panel",
+                adminUserList: "Users List",
+                thUsername: "Username",
+                thRole: "Role",
+                thBalance: "Balance",
+                thStatus: "Status",
+                thActions: "Actions",
+                modalLoginTitle: "Login",
+                modalRegisterTitle: "Register",
+                lblUsername: "Minecraft Username",
+                lblPassword: "Password",
+                btnLoginSubmit: "Login",
+                btnRegisterSubmit: "Register",
+                msgNoAccount: "Don't have an account?",
+                btnGoRegister: "Register here",
+                msgHasAccount: "Already have an account?",
+                btnGoLogin: "Login here",
+                modalAddBalanceTitle: "Add Balance",
+                lblAmount: "Amount (₼)",
+                btnAddBalanceSubmit: "Confirm"
+            },
+            ru: {
+                navHome: "Главная",
+                navShop: "Магазин",
+                navLeaderboard: "Топ Игроков",
+                navSettings: "Настройки",
+                navAdmin: "Админ Панель",
+                heroDesc: "Добро пожаловать на самый продвинутый Minecraft Survival (SMP) сервер в Азербайджане! Присоединяйтесь и создайте свое королевство.",
+                ipLabel: "IP АДРЕС СЕРВЕРА",
+                copyBtn: "Копировать IP",
+                feat1Title: "МОЩНАЯ ЗАЩИТА",
+                feat1Desc: "Безопасная игра благодаря Anti-Cheat и защите 24/7.",
+                feat2Title: "ОСОБАЯ ЭКОНОМИКА",
+                feat2Desc: "Сбалансированный рынок, спавнеры и аукционы.",
+                feat3Title: "НИЗКИЙ ПИНГ И ВЫСОКИЙ FPS",
+                feat3Desc: "Плавная игра на мощной инфраструктуре VDS.",
+                shopTitle: "Магазин - Спавнеры",
+                spawnerZombie: "Спавнер Зомби",
+                spawnerZombieDesc: "Идеально подходит для создания автоматической фермы.",
+                spawnerSkeleton: "Спавнер Скелетов",
+                spawnerSkeletonDesc: "Лучший источник костей и стрел.",
+                spawnerBlaze: "Спавнер Ифритов",
+                spawnerBlazeDesc: "Премиум спавнер для получения XP и зельеварения.",
+                buyBtn: "Купить",
+                lbTitle: "Таблица Лидеров",
+                lbPlayer: "Игрок",
+                lbKills: "Убийств",
+                lbPlaytime: "Время в игре",
+                settingsTitle: "Настройки Аккаунта",
+                lblCurrPass: "Текущий Пароль",
+                lblNewPass: "Новый Пароль",
+                btnUpdatePass: "Обновить Пароль",
+                adminTitle: "Панель Администратора",
+                adminUserList: "Список Пользователей",
+                thUsername: "Имя Пользователя",
+                thRole: "Роль",
+                thBalance: "Баланс",
+                thStatus: "Статус",
+                thActions: "Действия",
+                modalLoginTitle: "Вход",
+                modalRegisterTitle: "Регистрация",
+                lblUsername: "Minecraft Никнейм",
+                lblPassword: "Пароль",
+                btnLoginSubmit: "Войти",
+                btnRegisterSubmit: "Зарегистрироваться",
+                msgNoAccount: "Нет аккаунта?",
+                btnGoRegister: "Зарегистрируйтесь",
+                msgHasAccount: "Уже есть аккаунт?",
+                btnGoLogin: "Войти",
+                modalAddBalanceTitle: "Пополнить Баланс",
+                lblAmount: "Сумма (₼)",
+                btnAddBalanceSubmit: "Подтвердить"
+            }
+        };
+
+        let currentLang = 'az';
+
+        // INITIAL DATABASE SEEDING
+        function initDB() {
+            if (!localStorage.getItem('zsmp_users')) {
+                const defaultUsers = [
+                    { username: 'Admin', password: '123', role: 'admin', balance: 100.00, banned: false },
+                    { username: 'ProGamer', password: '123', role: 'player', balance: 15.50, banned: false },
+                    { username: 'CraftMaster', password: '123', role: 'player', balance: 2.00, banned: false }
+                ];
+                localStorage.setItem('zsmp_users', JSON.stringify(defaultUsers));
+            }
+
+            if (!localStorage.getItem('zsmp_leaderboard')) {
+                const defaultLB = [
+                    { username: 'ProGamer', kills: 482, playtime: '124 saat' },
+                    { username: 'CraftMaster', kills: 310, playtime: '89 saat' },
+                    { username: 'Admin', kills: 250, playtime: '60 saat' },
+                    { username: 'ShadowNinja', kills: 198, playtime: '45 saat' },
+                    { username: 'Steve007', kills: 95, playtime: '20 saat' }
+                ];
+                localStorage.setItem('zsmp_leaderboard', JSON.stringify(defaultLB));
+            }
+        }
+
+        // CURRENT USER MANAGEMENT
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('zsmp_current_user')) || null;
+        }
+
+        function setCurrentUser(user) {
+            if (user) {
+                localStorage.setItem('zsmp_current_user', JSON.stringify(user));
+            } else {
+                localStorage.removeItem('zsmp_current_user');
+            }
+            updateUI();
+        }
+
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('zsmp_users')) || [];
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('zsmp_users', JSON.stringify(users));
+        }
+
+        // SPA TAB SWITCHING
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.remove('hidden');
+
+            if (tabId === 'leaderboard') renderLeaderboard();
+            if (tabId === 'admin') renderAdminPanel();
+        }
+
+        // COPY IP FUNCTION
+        function copyIP() {
+            navigator.clipboard.writeText('play.veonmc.com');
+            alert('IP adresi kopyalandı: play.veonmc.com');
+        }
+
+        // MODAL TOGGLES
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // LANGUAGE CHANGE
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-key]').forEach(elem => {
+                const key = elem.getAttribute('data-key');
+                if (i18n[lang] && i18n[lang][key]) {
+                    elem.textContent = i18n[lang][key];
+                }
+            });
+        }
+
+        // AUTH SYSTEM
+        function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            if (!username || !password) return;
+
+            let users = getUsers();
+            if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+                alert('Bu istifadəçi adı artıq mövcutdur!');
+                return;
+            }
+
+            const newUser = { username, password, role: 'player', balance: 0.00, banned: false };
+            users.push(newUser);
+            saveUsers(users);
+
+            setCurrentUser(newUser);
+            closeModal('registerModal');
+            alert('Qeydiyyat uğurla tamamlandı!');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            let users = getUsers();
+            const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+
+            if (!user) {
+                alert('İstifadəçi adı və ya şifrə yanlışdır!');
+                return;
+            }
+
+            if (user.banned) {
+                alert('Bu hesab bloklanıb!');
+                return;
+            }
+
+            setCurrentUser(user);
+            closeModal('loginModal');
+        }
+
+        function logout() {
+            setCurrentUser(null);
+            switchTab('home');
+        }
+
+        // UI UPDATE ON AUTH / LOAD
+        function updateUI() {
+            const user = getCurrentUser();
+            const container = document.getElementById('authContainer');
+
+            const navSettings = document.getElementById('navSettingsBtn');
+            const navAdmin = document.getElementById('navAdminBtn');
+            const mNavSettings = document.getElementById('mobileNavSettingsBtn');
+            const mNavAdmin = document.getElementById('mobileNavAdminBtn');
+
+            if (user) {
+                container.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="https://mc-heads.net/avatar/${user.username}/32" alt="${user.username}" class="w-8 h-8 rounded border border-mcGreen">
+                        <div class="text-left hidden sm:block">
+                            <div class="text-sm font-bold leading-none text-white">${user.username}</div>
+                            <div class="text-xs text-mcGreen font-bold">${user.balance.toFixed(2)} ₼</div>
+                        </div>
+                        <button onclick="logout()" class="bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white p-2 rounded transition text-xs">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                `;
+
+                navSettings.classList.remove('hidden');
+                mNavSettings.classList.remove('hidden');
+
+                if (user.role === 'admin') {
+                    navAdmin.classList.remove('hidden');
+                    mNavAdmin.classList.remove('hidden');
+                } else {
+                    navAdmin.classList.add('hidden');
+                    mNavAdmin.classList.add('hidden');
+                }
+            } else {
+                container.innerHTML = `
+                    <button onclick="openModal('loginModal')" class="bg-mcGreen text-black font-bold px-4 py-1.5 rounded hover:bg-mcGreenDark transition text-sm">Giriş</button>
+                `;
+                navSettings.classList.add('hidden');
+                navAdmin.classList.add('hidden');
+                mNavSettings.classList.add('hidden');
+                mNavAdmin.classList.add('hidden');
+            }
+        }
+
+        // STORE BUY FUNCTION
+        function buyItem(itemName, price) {
+            let user = getCurrentUser();
+            if (!user) {
+                openModal('loginModal');
+                return;
+            }
+
+            if (user.balance < price) {
+                alert('Balansınızda kifayət qədər vəsait yoxdur!');
+                return;
+            }
+
+            user.balance -= price;
+            setCurrentUser(user);
+
+            // Update main DB
+            let users = getUsers();
+            let idx = users.findIndex(u => u.username === user.username);
+            if (idx !== -1) {
+                users[idx].balance = user.balance;
+                saveUsers(users);
+            }
+
+            alert(`${itemName} uğurla satın alındı! Uğurlar!`);
+        }
+
+        // LEADERBOARD RENDER
+        function renderLeaderboard() {
+            const data = JSON.parse(localStorage.getItem('zsmp_leaderboard')) || [];
+            const body = document.getElementById('leaderboardBody');
+            body.innerHTML = '';
+
+            data.forEach((item, index) => {
+                body.innerHTML += `
+                    <tr class="border-b border-mcDarkBorder/50 hover:bg-mcBg/50 transition">
+                        <td class="p-4 font-bold text-mcGreen">${index + 1}</td>
+                        <td class="p-4 flex items-center gap-3">
+                            <img src="https://mc-heads.net/avatar/${item.username}/28" class="w-7 h-7 rounded border border-mcDarkBorder">
+                            <span class="font-semibold">${item.username}</span>
+                        </td>
+                        <td class="p-4 font-semibold text-gray-300">${item.kills}</td>
+                        <td class="p-4 text-gray-400 text-sm">${item.playtime}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // SETTINGS: CHANGE PASSWORD
+        function changePassword(e) {
+            e.preventDefault();
+            let user = getCurrentUser();
+            if (!user) return;
+
+            const currPass = document.getElementById('currPassInput').value;
+            const newPass = document.getElementById('newPassInput').value;
+
+            if (user.password !== currPass) {
+                alert('Hazırkı şifrə yanlışdır!');
+                return;
+            }
+
+            user.password = newPass;
+            setCurrentUser(user);
+
+            let users = getUsers();
+            let idx = users.findIndex(u => u.username === user.username);
+            if (idx !== -1) {
+                users[idx].password = newPass;
+                saveUsers(users);
+            }
+
+            alert('Şifrəniz uğurla yeniləndi!');
+            document.getElementById('currPassInput').value = '';
+            document.getElementById('newPassInput').value = '';
+        }
+
+        // ADMIN PANEL FUNCTIONS
+        function renderAdminPanel() {
+            const users = getUsers();
+            const body = document.getElementById('adminUsersBody');
+            body.innerHTML = '';
+
+            users.forEach(u => {
+                body.innerHTML += `
+                    <tr class="border-b border-mcDarkBorder/50 hover:bg-mcBg/30">
+                        <td class="p-3">
+                            <img src="https://mc-heads.net/avatar/${u.username}/28" class="w-7 h-7 rounded">
+                        </td>
+                        <td class="p-3 font-semibold">${u.username}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 text-xs rounded ${u.role === 'admin' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-gray-700 text-gray-300'}">
+                                ${u.role.toUpperCase()}
+                            </span>
+                        </td>
+                        <td class="p-3 text-mcGreen font-bold">${u.balance.toFixed(2)} ₼</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 text-xs rounded ${u.banned ? 'bg-red-600 text-white' : 'bg-green-600/20 text-green-400'}">
+                                ${u.banned ? 'BANLANIB' : 'AKTİV'}
+                            </span>
+                        </td>
+                        <td class="p-3 flex gap-2">
+                            <button onclick="openAddBalanceModal('${u.username}')" class="bg-mcGreen/20 text-mcGreen hover:bg-mcGreen hover:text-black px-2 py-1 rounded text-xs transition">
+                                + Balans
+                            </button>
+                            ${u.role !== 'admin' ? `
+                                <button onclick="toggleBan('${u.username}')" class="bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white px-2 py-1 rounded text-xs transition">
+                                    ${u.banned ? 'Ban Aç' : 'Banla/Kick'}
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function openAddBalanceModal(username) {
+            document.getElementById('balanceTargetUser').value = username;
+            document.getElementById('balanceAmount').value = '';
+            openModal('balanceModal');
+        }
+
+        function submitAddBalance(e) {
+            e.preventDefault();
+            const target = document.getElementById('balanceTargetUser').value;
+            const amount = parseFloat(document.getElementById('balanceAmount').value);
+
+            if (isNaN(amount) || amount <= 0) return;
+
+            let users = getUsers();
+            let user = users.find(u => u.username === target);
+            if (user) {
+                user.balance += amount;
+                saveUsers(users);
+
+                // If current user is updated
+                let curr = getCurrentUser();
+                if (curr && curr.username === target) {
+                    curr.balance = user.balance;
+                    setCurrentUser(curr);
+                }
+
+                renderAdminPanel();
+                closeModal('balanceModal');
+                alert(`${target} istifadəçisinin balansına ${amount} ₼ əlavə edildi.`);
+            }
+        }
+
+        function toggleBan(username) {
+            let users = getUsers();
+            let user = users.find(u => u.username === username);
+            if (user) {
+                user.banned = !user.banned;
+                saveUsers(users);
+                renderAdminPanel();
+            }
+        }
+
+        // ON PAGE INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            initDB();
+            updateUI();
+        });
+    </script>
+</body>
+</html>
